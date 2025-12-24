@@ -161,7 +161,7 @@ importantAction("Roadside Coder").then((res) => {
 
 // Promise Combinator
 
-// promise.all()
+// promise.all() // one fails all fails
 console.log("start")
 
 Promise.all([
@@ -177,7 +177,7 @@ Promise.all([
 console.log("stop")
 
 
-// promise.race()
+// promise.race()  // jo phle reject and resolve hoga vhi hpga print res ya rej
 console.log("start")
 
 Promise.race([
@@ -193,7 +193,7 @@ Promise.race([
 console.log("stop")
 
 
-// promise.allSettled()
+// promise.allSettled() // faild promise bhi deta hai
 console.log("start")
 
 Promise.allSettled([
@@ -209,7 +209,7 @@ Promise.allSettled([
 console.log("stop")
 
 
-// promise.any()
+// promise.any() // return first fulfill promisee ignore rejected
 console.log("start")
 
 Promise.any([

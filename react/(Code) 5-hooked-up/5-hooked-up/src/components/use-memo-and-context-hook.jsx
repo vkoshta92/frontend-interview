@@ -10,8 +10,8 @@ const UseMemoAndCallbackHook = () => {
     return counter * counter;
   };
 
-  const squaredValueUseMemo = useMemo(squaredValue, [counter]);
-  const squaredValueUseCallback = useCallback(squaredValue, [counter]);
+  const squaredValueUseMemo = useMemo(squaredValue, [counter]); // memoried value which function return// ery time reintiolize function and take latst information 
+  const squaredValueUseCallback = useCallback(squaredValue, [counter]); // memoried function
 
   return (
     <div>
