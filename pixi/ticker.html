@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PixiJS Interview Example</title>
+  <style>
+    body {
+      margin: 0;
+      background: #020617;
+    }
+  </style>
+</head>
+<body>
+
+<script src="https://pixijs.download/release/pixi.min.js"></script>
+
+<script>
+(async () => {
+  // 1️⃣ Create Application (IMPORTANT in v7+)
+  const app = new PIXI.Application();
+  await app.init({
+    width: 600,
+    height: 400,
+    backgroundColor: 0x1e293b,
+  });
+
+  document.body.appendChild(app.canvas);
+
+  // 2️⃣ Create Circle
+  const ball = new PIXI.Graphics();
+  ball.beginFill(0x38bdf8);
+  ball.drawCircle(0, 0, 30);
+  ball.endFill();
+
+  // Set position
+  ball.x = 50;
+  ball.y = 200;
+
+  app.stage.addChild(ball);
+
+  // 3️⃣ Movement Logic
+  let speed = 3;
+
+  // 4️⃣ Game Loop
+  app.ticker.add(() => {
+    ball.x += speed;
+
+    // Bounce logic
+    if (ball.x > app.screen.width - 30 || ball.x < 30) {
+      speed *= -1;
+    }
+  });
+})();
+</script>
+
+</body>
+</html>

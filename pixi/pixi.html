@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PixiJS Circle FIX</title>
+  <style>
+    body {
+      margin: 0;
+      background: #020617;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PIXI CDN (v7+) -->
+  <script src="https://pixijs.download/release/pixi.min.js"></script>
+
+  <script>
+    (async () => {
+      // ✅ IMPORTANT FIX
+      const app = new PIXI.Application();
+      await app.init({
+        width: 600,
+        height: 400,
+        backgroundColor: 0x0f172a,
+        antialias: true,
+      });
+
+      document.body.appendChild(app.canvas);
+
+      // Create circle
+      const circle = new PIXI.Graphics();
+      circle.beginFill(0x22c55e);
+      circle.drawCircle(300, 200, 60);
+      circle.endFill();
+
+      app.stage.addChild(circle);
+    })();
+  </script>
+
+</body>
+</html>

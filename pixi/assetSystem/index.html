@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.2/pixi.min.js"></script>
+    <title>Asset System</title>
+</head>
+
+<body>
+    <script>
+        document.body.style.margin = "0px";
+        document.body.style.padding = "0px";
+        document.body.style.overflow = "hidden";
+
+        const app = new PIXI.Application(
+            {
+                antialias: true,
+                resizeTo: window,
+                backgroundColor: 0xb2ead3
+            }
+        );
+        document.body.appendChild(app.view);
+
+        async function setup() {
+            PIXI.Assets.addBundle('level-1', {
+                bunny: "https://pixijs.com/assets/bunny.png",
+                character: "assets/idle.png",
+                box: "assets/blue.png"
+            })
+
+            const assets = await PIXI.Assets.loadBundle('level-1');
+            // const texture = await PIXI.Assets.load("https://pixijs.com/assets/bunny.png");
+            const bunny = new PIXI.Sprite(assets.bunny);
+            bunny.x = app.screen.width / 2;
+            bunny.y = app.screen.height / 2;
+            bunny.scale.set(2.5);
+            bunny.anchor.set(0.5);
+            // app.stage.addChild(bunny);
+
+            const character = new PIXI.Sprite(assets.character);
+            character.x = app.screen.width / 2;
+            character.y = 200;
+            character.scale.set(0.5);
+            character.anchor.set(0.5);
+            // app.stage.addChild(character);
+
+            const box = new PIXI.Sprite(assets.box);
+            box.x = app.screen.width / 2;
+            box.y = 400;
+            box.anchor.set(0.5);
+            app.stage.addChild(bunny, character, box);
+
+            app.ticker.add((delta) => {
+                bunny.rotation += 0.1 * delta;
+            })
+        }
+
+        setup();
+    </script>
+
+</body>
+
+</html>

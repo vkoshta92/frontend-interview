@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.2/pixi.min.js"></script>
+    <title>Container</title>
+</head>
+
+<body>
+    <script>
+        document.body.style.margin = "0px";
+        document.body.style.padding = "0px";
+        document.body.style.overflow = "hidden";
+
+        const app = new PIXI.Application(
+            {
+                antialias: true,
+                resizeTo: window,
+                backgroundColor: 0x1099bb
+            }
+        );
+        document.body.appendChild(app.view);
+
+        const playerContainer = new PIXI.Container();
+        playerContainer.x = 100;
+        playerContainer.y = 200;
+        app.stage.addChild(playerContainer);
+
+        const body = PIXI.Sprite.from(PIXI.Texture.WHITE);
+        body.tint = 0x0000ff;
+        body.width = 100;
+        body.height = 100;
+        body.x = 0;
+        body.y = 0;
+        playerContainer.addChild(body);
+
+
+        const head = PIXI.Sprite.from(PIXI.Texture.WHITE);
+        head.tint = 0xff0000;
+        head.width = 50;
+        head.height = 50;
+        head.x = 25;
+        head.y = -50;
+        playerContainer.addChild(head);
+
+        app.ticker.add((delta) => {
+            playerContainer.x += 3 * delta;
+            if (playerContainer.x >= 800) {
+                playerContainer.x = 100;
+            }
+        })
+
+    </script>
+
+</body>
+
+</html>
