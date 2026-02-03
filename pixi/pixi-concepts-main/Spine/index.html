@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.2/pixi.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pixi-spine@4.0.6/dist/pixi-spine.js"></script>
+    <title>Asset System</title>
+</head>
+
+<body>
+    <script>
+        document.body.style.margin = "0px";
+        document.body.style.padding = "0px";
+        document.body.style.overflow = "hidden";
+
+        const app = new PIXI.Application(
+            {
+                antialias: true,
+                resizeTo: window,
+                backgroundColor: 0x022f00
+            }
+        );
+        document.body.appendChild(app.view);
+        const spineAssetURL = "assets/big-boom-h.json";
+
+        async function setup() {
+            PIXI.Assets.add("boomData", spineAssetURL);
+            const resource = await PIXI.Assets.load("boomData");
+
+            createExplosion(resource.spineData);
+        }
+
+        function createExplosion(spineData) {
+            const explosion = new PIXI.spine.Spine(spineData);
+            explosion.x = app.screen.width / 2;
+            explosion.y = app.screen.height / 2;
+            explosion.scale.set(0.5);
+            app.stage.addChild(explosion);
+
+            explosion.state.timeScale = 0.1;
+            if (explosion.state.hasAnimation('start')) {
+                explosion.state.setAnimation(0, 'start', false);
+            }
+
+            app.stage.eventMode = "static";
+            app.stage.hitArea = app.screen;
+            app.stage.on("pointerdown", () => {
+                explosion.state.setAnimation(0, 'start', false);
+            })
+        }
+        setup();
+    </script>
+
+</body>
+
+</html>

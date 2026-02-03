@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.2/pixi.min.js"></script>
+    <title>Asset System</title>
+</head>
+
+<body>
+    <script>
+        document.body.style.margin = "0px";
+        document.body.style.padding = "0px";
+        document.body.style.overflow = "hidden";
+
+        const app = new PIXI.Application(
+            {
+                antialias: true,
+                resizeTo: window,
+                backgroundColor: 0xffeaf5
+            }
+        );
+        document.body.appendChild(app.view);
+
+        async function setup() {
+            PIXI.Assets.addBundle('level-1', {
+                bunny: "https://pixijs.com/assets/bunny.png"
+            })
+
+            const assets = await PIXI.Assets.loadBundle('level-1');
+            // const texture = await PIXI.Assets.load("https://pixijs.com/assets/bunny.png");
+            const bunny = new PIXI.Sprite(assets.bunny);
+            bunny.x = app.screen.width / 2;
+            bunny.y = app.screen.height / 2.5;
+            bunny.scale.set(2.5);
+            bunny.anchor.set(0.5);
+            bunny.eventMode = "static";
+            bunny.cursor = "pointer";
+            app.stage.addChild(bunny);
+
+            app.ticker.add((delta) => {
+                bunny.rotation += 0.02 * delta;
+            })
+
+            let isDragging = false;
+            let score = 0;
+            bunny.on("pointerdown", () => {
+                score++;
+                scoreText.text = "Score: " + score;
+                isDragging = true;
+                bunny.scale.set(4);
+                bunny.alpha = 0.5;
+            })
+
+            bunny.on("pointerup", () => {
+                isDragging = false;
+                bunny.scale.set(2.5);
+                bunny.alpha = 1;
+            })
+
+            bunny.on("pointerover", () => {
+                bunny.tint = 0x00ff00;
+            })
+
+            bunny.on("pointerout", () => {
+                bunny.tint = 0xffffff;
+            })
+
+            bunny.on("pointermove", (event) => {
+                if (isDragging) {
+                    const newPosition = event.data.getLocalPosition(bunny.parent);
+                    bunny.x = newPosition.x;
+                    bunny.y = newPosition.y;
+                }
+            })
+
+            const style = new PIXI.TextStyle({
+                "dropShadow": true,
+                "fill": [
+                    "#f91010",
+                    "#fdf7f7",
+                    "#270ced",
+                    "#0aa338"
+                ],
+                "fontFamily": "Impact",
+                "fontSize": 36,
+                "letterSpacing": 3,
+                "stroke": "#140967",
+                "strokeThickness": 3,
+                "resolution": 2
+            })
+            const scoreText = new PIXI.Text("Score: 0", style);
+            scoreText.x = 20;
+            scoreText.y = 20;
+            app.stage.addChild(scoreText);
+        }
+        setup();
+    </script>
+
+</body>
+
+</html>
