@@ -1,0 +1,1197 @@
+
+<style>
+.btn{cursor:pointer;padding:8px 12px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);font-size:12px;text-align:left;width:100%;margin-bottom:5px;}
+.btn:hover{background:var(--color-background-secondary);}
+.btn.active{border-color:var(--color-border-info);background:var(--color-background-info);color:var(--color-text-info);}
+.code{background:var(--color-background-tertiary);border-radius:var(--border-radius-md);padding:10px 12px;font-family:monospace;font-size:11.5px;color:var(--color-text-primary);overflow-x:auto;margin:8px 0;white-space:pre;line-height:1.5;}
+.tag{display:inline-block;padding:2px 8px;border-radius:var(--border-radius-md);font-size:11px;margin-right:4px;}
+.info{background:var(--color-background-info);color:var(--color-text-info);}
+.success{background:var(--color-background-success);color:var(--color-text-success);}
+.warn{background:var(--color-background-warning);color:var(--color-text-warning);}
+.danger{background:var(--color-background-danger);color:var(--color-text-danger);}
+.muted{font-size:13px;color:var(--color-text-secondary);margin:0 0 6px;}
+.cat{font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.05em;margin:10px 0 4px;padding-left:2px;}
+</style>
+
+<h2 class="sr-only">Design Patterns for Game Development — gaming_company Level</h2>
+
+<div style="display:grid;grid-template-columns:190px minmax(0,1fr);gap:16px;padding:1rem 0;">
+<div style="overflow-y:auto;max-height:600px;">
+  <p class="cat">Creational</p>
+  <button class="btn active" onclick="show(0)">1. Singleton</button>
+  <button class="btn" onclick="show(1)">2. Factory</button>
+  <button class="btn" onclick="show(2)">3. Object Pool</button>
+
+  <p class="cat">Structural</p>
+  <button class="btn" onclick="show(3)">4. MVC</button>
+  <button class="btn" onclick="show(4)">5. MVVM</button>
+  <button class="btn" onclick="show(5)">6. Component</button>
+
+  <p class="cat">Behavioral</p>
+  <button class="btn" onclick="show(6)">7. State Machine</button>
+  <button class="btn" onclick="show(7)">8. Event Bus</button>
+  <button class="btn" onclick="show(8)">9. Observer</button>
+  <button class="btn" onclick="show(9)">10. Strategy</button>
+  <button class="btn" onclick="show(10)">11. Command</button>
+
+  <p class="cat">Game Specific</p>
+  <button class="btn" onclick="show(11)">12. ECS</button>
+  <button class="btn" onclick="show(12)">13. Scene Manager</button>
+  <button class="btn" onclick="show(13)">14. Asset Manager</button>
+
+  <p class="cat">gaming_company Level</p>
+  <button class="btn" onclick="show(14)">15. Full Game Arch</button>
+</div>
+
+<div id="content" style="min-height:500px;"></div>
+</div>
+
+<script>
+const topics = [
+{
+  title:"Singleton Pattern",tag:"Creational",tagClass:"info",
+  gaming_company:"GameConfig, AudioManager, ScoreManager — sirf ek instance hona chahiye!",
+  simple:"Singleton = poore app mein sirf ek object. Baar baar new mat banao — same instance lo.",
+  code:`class GameManager {
+  static #instance = null;
+
+  #score = 0;
+  #level = 1;
+  #isRunning = false;
+
+  constructor() {
+    if (GameManager.#instance) {
+      return GameManager.#instance;
+    }
+    GameManager.#instance = this;
+  }
+
+  static getInstance() {
+    if (!GameManager.#instance) {
+      new GameManager();
+    }
+    return GameManager.#instance;
+  }
+
+  addScore(points) { this.#score += points; }
+  getScore() { return this.#score; }
+}
+
+// Kahin bhi use karo — same instance milega!
+const gm1 = GameManager.getInstance();
+const gm2 = GameManager.getInstance();
+
+gm1.addScore(100);
+console.log(gm2.getScore()); // 100 — same!
+console.log(gm1 === gm2);    // true`,
+  tip:"AudioManager, AssetManager — gaming_company mein sab Singleton hote hain!"
+},
+{
+  title:"Factory Pattern",tag:"Creational",tagClass:"info",
+  gaming_company:"Symbol banana — 'cherry', 'seven', 'wild' — Factory decide karti hai kaunsa banaye!",
+  simple:"Factory = object banane ka kaam ek jagah centralize karo. Caller ko details nahi pata honi chahiye.",
+  code:`class SymbolFactory {
+  static CONFIGS = {
+    cherry:  { value: 5,    color: 0xFF0000, rare: false },
+    orange:  { value: 10,   color: 0xFF8800, rare: false },
+    seven:   { value: 100,  color: 0xFF0000, rare: true  },
+    bar:     { value: 25,   color: 0xFFD700, rare: false },
+    wild:    { value: 0,    color: 0xFFFFFF, rare: true  },
+    scatter: { value: 0,    color: 0x00FFFF, rare: true  },
+  };
+
+  static create(type, x, y) {
+    const config = this.CONFIGS[type];
+    if (!config) throw new Error(\`Unknown: \${type}\`);
+
+    // Alag alag symbol types
+    switch(type) {
+      case 'wild':    return new WildSymbol(x, y, config);
+      case 'scatter': return new ScatterSymbol(x,y,config);
+      default:        return new RegularSymbol(x,y,config);
+    }
+  }
+
+  static createRandom(x, y) {
+    const types = Object.keys(this.CONFIGS);
+    const type = types[
+      Math.floor(Math.random() * types.length)
+    ];
+    return this.create(type, x, y);
+  }
+}
+
+// Simple use — factory handle karti hai sab
+const cherry  = SymbolFactory.create('cherry', 0, 0);
+const wild    = SymbolFactory.create('wild', 100, 0);
+const random  = SymbolFactory.createRandom(200, 0);`,
+  tip:"Naya symbol type add karna ho toh sirf Factory mein add karo!"
+},
+{
+  title:"Object Pool Pattern",tag:"Creational",tagClass:"info",
+  gaming_company:"Slot mein bahut particles, symbols hain — har baar new banana slow hai. Pool se reuse karo!",
+  simple:"Pool = objects pre-banao, use karo, wapas karo. Memory aur performance dono better.",
+  code:`class ObjectPool {
+  #pool = [];
+  #active = new Set();
+  #factory;
+  #maxSize;
+
+  constructor(factory, initialSize = 20, maxSize = 100) {
+    this.#factory = factory;
+    this.#maxSize = maxSize;
+
+    // Pre-create objects
+    for (let i = 0; i < initialSize; i++) {
+      this.#pool.push(this.#factory());
+    }
+  }
+
+  acquire() {
+    let obj = this.#pool.pop();
+
+    if (!obj && this.#active.size < this.#maxSize) {
+      obj = this.#factory(); // Pool khali — naya banao
+    }
+
+    if (obj) {
+      this.#active.add(obj);
+      obj.onAcquire?.(); // Reset hook
+    }
+    return obj;
+  }
+
+  release(obj) {
+    if (!this.#active.has(obj)) return;
+    this.#active.delete(obj);
+    obj.onRelease?.(); // Cleanup hook
+    this.#pool.push(obj);
+  }
+
+  get activeCount() { return this.#active.size; }
+  get poolSize()    { return this.#pool.length;  }
+}
+
+// Coin particles ke liye pool
+const coinPool = new ObjectPool(
+  () => new CoinParticle(),
+  50, 200
+);
+
+// Win pe coins emit karo
+function emitCoins(x, y, count) {
+  for (let i = 0; i < count; i++) {
+    const coin = coinPool.acquire();
+    coin.x = x; coin.y = y;
+    coin.launch();
+    setTimeout(() => coinPool.release(coin), 2000);
+  }
+}`,
+  tip:"gaming_company mein particles, symbols sab pool se aate hain — memory optimize!"
+},
+{
+  title:"MVC Pattern",tag:"Structural",tagClass:"success",
+  gaming_company:"Game logic (Model), PixiJS display (View), Input handling (Controller) — sab alag rakho!",
+  simple:"MVC = Model (data), View (display), Controller (logic). Sab alag — easy to change!",
+  code:`// MODEL — Game data only
+class SlotModel {
+  #reelData = [];
+  #balance = 1000;
+  #bet = 10;
+  #winAmount = 0;
+
+  spin() {
+    this.#reelData = this.#generateResults();
+    this.#balance -= this.#bet;
+    this.#winAmount = this.#calculateWin();
+    this.#balance += this.#winAmount;
+    return this.getState();
+  }
+
+  getState() {
+    return {
+      reels: this.#reelData,
+      balance: this.#balance,
+      win: this.#winAmount,
+      bet: this.#bet
+    };
+  }
+
+  #generateResults() { /* reel symbols */ }
+  #calculateWin() { /* win logic */ }
+}
+
+// VIEW — PixiJS display only
+class SlotView {
+  constructor(app) {
+    this.app = app;
+    this.reelSprites = [];
+    this.balanceText = new PIXI.Text('$1000');
+  }
+
+  updateBalance(amount) {
+    this.balanceText.text = \`$\${amount}\`;
+  }
+
+  showWin(amount) {
+    this.winText.text = \`WIN: $\${amount}!\`;
+    this.playWinAnimation();
+  }
+
+  spinReels(results, onComplete) {
+    // Reel spin animation
+    this.animateReels(results, onComplete);
+  }
+}
+
+// CONTROLLER — connects Model & View
+class SlotController {
+  constructor(model, view) {
+    this.model = model;
+    this.view = view;
+    this.setupListeners();
+  }
+
+  setupListeners() {
+    this.view.spinBtn.on('click', () => this.onSpin());
+  }
+
+  onSpin() {
+    const state = this.model.spin();
+    this.view.spinReels(state.reels, () => {
+      this.view.updateBalance(state.balance);
+      if (state.win > 0) this.view.showWin(state.win);
+    });
+  }
+}
+
+// Bootstrap
+const model = new SlotModel();
+const view  = new SlotView(app);
+const ctrl  = new SlotController(model, view);`,
+  tip:"MVC se game logic aur display bilkul alag hoti hai — senior developers yahi dekhte hain!"
+},
+{
+  title:"MVVM Pattern",tag:"Structural",tagClass:"success",
+  gaming_company:"ViewModel automatically View update karta hai — balance change hote hi UI change!",
+  simple:"MVVM = Model + ViewModel (reactive) + View. ViewModel data change pe auto View update karta hai.",
+  code:`// MODEL
+class GameModel {
+  balance = 1000;
+  bet = 10;
+  lastWin = 0;
+}
+
+// VIEWMODEL — reactive layer
+class GameViewModel {
+  #model;
+  #listeners = new Map();
+
+  constructor(model) {
+    this.#model = model;
+  }
+
+  // Reactive getter
+  get balance() { return this.#model.balance; }
+  get bet()     { return this.#model.bet;     }
+  get lastWin() { return this.#model.lastWin; }
+
+  // Observe changes
+  observe(property, callback) {
+    if (!this.#listeners.has(property)) {
+      this.#listeners.set(property, []);
+    }
+    this.#listeners.get(property).push(callback);
+  }
+
+  // Notify observers
+  #notify(property) {
+    this.#listeners.get(property)?.forEach(
+      cb => cb(this.#model[property])
+    );
+  }
+
+  // Actions
+  placeBet(amount) {
+    this.#model.bet = amount;
+    this.#notify('bet');
+  }
+
+  updateBalance(amount) {
+    this.#model.balance = amount;
+    this.#notify('balance'); // Auto UI update!
+  }
+}
+
+// VIEW — observes ViewModel
+class GameView {
+  constructor(viewModel) {
+    this.vm = viewModel;
+
+    // Bind — auto update hoga!
+    this.vm.observe('balance', (val) => {
+      this.balanceText.text = \`$\${val}\`;
+    });
+
+    this.vm.observe('bet', (val) => {
+      this.betText.text = \`Bet: $\${val}\`;
+    });
+  }
+}
+
+const model = new GameModel();
+const vm    = new GameViewModel(model);
+const view  = new GameView(vm);
+
+// Balance change karo — View auto update!
+vm.updateBalance(500); // balanceText bhi update!`,
+  tip:"MVVM modern pattern hai — React jaisa feel aata hai. gaming_company mein impress karoge!"
+},
+{
+  title:"Component Pattern",tag:"Structural",tagClass:"success",
+  gaming_company:"ReelComponent, WinLineComponent, BalanceComponent — har cheez alag reusable component!",
+  simple:"Component = self-contained, reusable piece. Apna data + display + logic khud manage karta hai.",
+  code:`// Base Component
+class Component {
+  constructor(container) {
+    this.container = container;
+    this.children = [];
+  }
+
+  addChild(component) {
+    this.children.push(component);
+    this.container.addChild(component.container);
+  }
+
+  update(delta) {
+    this.children.forEach(c => c.update(delta));
+  }
+
+  destroy() {
+    this.children.forEach(c => c.destroy());
+    this.container.destroy();
+  }
+}
+
+// Balance Component — standalone
+class BalanceComponent extends Component {
+  #amount = 0;
+
+  constructor(x, y) {
+    super(new PIXI.Container());
+    this.container.x = x;
+    this.container.y = y;
+
+    this.bg = new PIXI.Graphics();
+    this.text = new PIXI.Text('$0');
+    this.container.addChild(this.bg, this.text);
+    this.render();
+  }
+
+  set amount(val) {
+    this.#amount = val;
+    this.render(); // Auto redraw!
+  }
+
+  render() {
+    this.bg.clear()
+      .beginFill(0x000000, 0.7)
+      .drawRoundedRect(0, 0, 200, 60, 10)
+      .endFill();
+    this.text.text = \`Balance: $\${this.#amount}\`;
+  }
+}
+
+// Reel Component
+class ReelComponent extends Component {
+  constructor(id, x) {
+    super(new PIXI.Container());
+    this.id = id;
+    this.container.x = x;
+    this.symbols = [];
+    this.spinning = false;
+  }
+
+  startSpin() { this.spinning = true; }
+  stopSpin(result) {
+    this.spinning = false;
+    this.showResult(result);
+  }
+
+  update(delta) {
+    if (this.spinning) this.scrollSymbols(delta);
+    super.update(delta);
+  }
+}
+
+// Game assembles components
+const balance = new BalanceComponent(10, 10);
+const reels = Array(5).fill(null)
+  .map((_, i) => new ReelComponent(i, i * 160));
+
+balance.amount = 1000; // Auto renders!`,
+  tip:"Component pattern se har cheez independent hai — easy to test, easy to change!"
+},
+{
+  title:"State Machine Pattern",tag:"Behavioral",tagClass:"warn",
+  gaming_company:"IDLE → SPINNING → EVALUATING → WIN/LOSE → IDLE — slot game ka flow!",
+  simple:"State Machine = game kaun si state mein hai track karo. Invalid transitions rok do.",
+  code:`const STATE = {
+  IDLE:        'IDLE',
+  SPINNING:    'SPINNING',
+  EVALUATING:  'EVALUATING',
+  WIN:         'WIN',
+  LOSE:        'LOSE',
+  BONUS:       'BONUS',
+  FREE_SPINS:  'FREE_SPINS',
+};
+
+const TRANSITIONS = {
+  [STATE.IDLE]:       [STATE.SPINNING],
+  [STATE.SPINNING]:   [STATE.EVALUATING],
+  [STATE.EVALUATING]: [STATE.WIN, STATE.LOSE, STATE.BONUS],
+  [STATE.WIN]:        [STATE.IDLE, STATE.FREE_SPINS],
+  [STATE.LOSE]:       [STATE.IDLE],
+  [STATE.BONUS]:      [STATE.IDLE],
+  [STATE.FREE_SPINS]: [STATE.SPINNING, STATE.IDLE],
+};
+
+class StateMachine {
+  #current = STATE.IDLE;
+  #handlers = {};
+  #history = [];
+
+  get state() { return this.#current; }
+
+  transition(next) {
+    const allowed = TRANSITIONS[this.#current] || [];
+    if (!allowed.includes(next)) {
+      console.error(
+        \`Invalid: \${this.#current} → \${next}\`
+      );
+      return false;
+    }
+
+    const prev = this.#current;
+    this.#current = next;
+    this.#history.push({ from: prev, to: next });
+
+    this.#handlers[next]?.forEach(fn => fn(prev));
+    return true;
+  }
+
+  on(state, handler) {
+    if (!this.#handlers[state]) {
+      this.#handlers[state] = [];
+    }
+    this.#handlers[state].push(handler);
+    return this; // Chaining!
+  }
+
+  is(state) { return this.#current === state; }
+}
+
+// Use karo
+const sm = new StateMachine();
+
+sm.on(STATE.SPINNING, () => {
+    reels.forEach(r => r.startSpin());
+  })
+  .on(STATE.WIN, (from) => {
+    showWinAnimation();
+    playWinSound();
+  })
+  .on(STATE.IDLE, () => {
+    spinButton.enable();
+  });
+
+spinButton.on('click', () => {
+  if (sm.is(STATE.IDLE)) {
+    sm.transition(STATE.SPINNING);
+  }
+});`,
+  tip:"State machine se invalid actions automatically block hote hain — clean code!"
+},
+{
+  title:"Event Bus Pattern",tag:"Behavioral",tagClass:"warn",
+  gaming_company:"Reel ne spin khatam kiya — EventBus se WinChecker, AudioManager, UIManager sab ko pata chala!",
+  simple:"Event Bus = central messaging. Koi bhi event emit karo, koi bhi sun sakta hai. Direct dependency nahi.",
+  code:`class EventBus {
+  static #instance = null;
+  #listeners = new Map();
+
+  static getInstance() {
+    if (!EventBus.#instance) {
+      EventBus.#instance = new EventBus();
+    }
+    return EventBus.#instance;
+  }
+
+  on(event, callback, context = null) {
+    if (!this.#listeners.has(event)) {
+      this.#listeners.set(event, []);
+    }
+    this.#listeners.get(event).push({
+      callback, context
+    });
+    return () => this.off(event, callback); // Unsubscribe fn
+  }
+
+  once(event, callback) {
+    const unsub = this.on(event, (...args) => {
+      callback(...args);
+      unsub(); // Auto remove after first call
+    });
+  }
+
+  emit(event, data) {
+    this.#listeners.get(event)?.forEach(
+      ({ callback, context }) => {
+        callback.call(context, data);
+      }
+    );
+  }
+
+  off(event, callback) {
+    const list = this.#listeners.get(event);
+    if (list) {
+      this.#listeners.set(event,
+        list.filter(l => l.callback !== callback)
+      );
+    }
+  }
+}
+
+const bus = EventBus.getInstance();
+
+// GAME EVENTS
+const EVENTS = {
+  SPIN_START:    'spin:start',
+  SPIN_COMPLETE: 'spin:complete',
+  WIN:           'game:win',
+  BALANCE_UPDATE:'ui:balance',
+  SOUND_PLAY:    'audio:play',
+};
+
+// Reel — emit karta hai
+class ReelManager {
+  onAllReelsStopped(results) {
+    bus.emit(EVENTS.SPIN_COMPLETE, { results });
+  }
+}
+
+// WinChecker — sunता है
+bus.on(EVENTS.SPIN_COMPLETE, ({ results }) => {
+  const wins = checkWinLines(results);
+  if (wins.length) bus.emit(EVENTS.WIN, { wins });
+});
+
+// AudioManager — sunता है
+bus.on(EVENTS.WIN, ({ wins }) => {
+  bus.emit(EVENTS.SOUND_PLAY, { sound: 'win' });
+});
+
+// UIManager — sunता है
+bus.on(EVENTS.BALANCE_UPDATE, ({ amount }) => {
+  balanceText.text = \`$\${amount}\`;
+});`,
+  tip:"Event Bus se components directly connected nahi hain — easy to add/remove features!"
+},
+{
+  title:"Observer Pattern",tag:"Behavioral",tagClass:"warn",
+  gaming_company:"Balance change hua — sab UI elements automatically update ho gaye!",
+  simple:"Observer = subject apne observers ko notify karta hai jab data change ho. Event Bus ka smaller version.",
+  code:`// Observable — data class
+class Observable {
+  #observers = new Set();
+  #value;
+
+  constructor(initialValue) {
+    this.#value = initialValue;
+  }
+
+  get value() { return this.#value; }
+
+  set value(newVal) {
+    if (newVal === this.#value) return;
+    const old = this.#value;
+    this.#value = newVal;
+    this.#notify(newVal, old);
+  }
+
+  subscribe(observer) {
+    this.#observers.add(observer);
+    observer(this.#value); // Immediate call
+    return () => this.#observers.delete(observer);
+  }
+
+  #notify(newVal, oldVal) {
+    this.#observers.forEach(obs => obs(newVal, oldVal));
+  }
+}
+
+// Game state as observables
+const balance  = new Observable(1000);
+const winAmount = new Observable(0);
+const isSpinning = new Observable(false);
+
+// UI subscribes — auto update!
+balance.subscribe((val) => {
+  balanceText.text = \`$\${val}\`;
+  if (val <= 0) showOutOfMoneyScreen();
+});
+
+winAmount.subscribe((val) => {
+  winText.visible = val > 0;
+  winText.text = \`WIN: $\${val}!\`;
+});
+
+isSpinning.subscribe((spinning) => {
+  spinButton.interactive = !spinning;
+  spinButton.alpha = spinning ? 0.5 : 1;
+});
+
+// Change karo — sab auto update!
+balance.value = 900;     // balanceText updates!
+winAmount.value = 500;   // winText shows!
+isSpinning.value = true; // button disabled!`,
+  tip:"Observable + Observer = reactive programming. React hooks isi idea pe hain!"
+},
+{
+  title:"Strategy Pattern",tag:"Behavioral",tagClass:"warn",
+  gaming_company:"Win calculation strategy — Regular, Bonus, FreeSpins — same interface, alag logic!",
+  simple:"Strategy = algorithm ko swap karo runtime pe. Same interface, alag implementation.",
+  code:`// Strategy Interface (by convention)
+class WinStrategy {
+  calculate(symbols, bet) {
+    throw new Error('Implement calculate()!');
+  }
+}
+
+// Alag alag strategies
+class NormalWinStrategy extends WinStrategy {
+  calculate(symbols, bet) {
+    const lines = checkWinLines(symbols);
+    return lines.reduce((total, line) => {
+      return total + bet * line.multiplier;
+    }, 0);
+  }
+}
+
+class BonusWinStrategy extends WinStrategy {
+  calculate(symbols, bet) {
+    const lines = checkWinLines(symbols);
+    return lines.reduce((total, line) => {
+      return total + bet * line.multiplier * 3; // 3x!
+    }, 0);
+  }
+}
+
+class FreeSpinStrategy extends WinStrategy {
+  calculate(symbols, bet) {
+    const lines = checkWinLines(symbols);
+    return lines.reduce((total, line) => {
+      return total + bet * line.multiplier * 5; // 5x!
+    }, 0);
+  }
+}
+
+// Context — strategy use karta hai
+class GameRound {
+  #strategy;
+
+  constructor(strategy) {
+    this.#strategy = strategy;
+  }
+
+  setStrategy(strategy) {
+    this.#strategy = strategy; // Runtime swap!
+  }
+
+  calculateWin(symbols, bet) {
+    return this.#strategy.calculate(symbols, bet);
+  }
+}
+
+const round = new GameRound(new NormalWinStrategy());
+round.calculateWin(symbols, 10); // Normal
+
+round.setStrategy(new BonusWinStrategy());
+round.calculateWin(symbols, 10); // 3x win!
+
+round.setStrategy(new FreeSpinStrategy());
+round.calculateWin(symbols, 10); // 5x win!`,
+  tip:"Bonus round shuru hua toh strategy swap karo — code change nahi hota!"
+},
+{
+  title:"Command Pattern",tag:"Behavioral",tagClass:"warn",
+  gaming_company:"Spin, Bet change, Auto-spin — sab commands hain. Undo/redo easy ho jaata hai!",
+  simple:"Command = action ko object mein wrap karo. Execute, undo, queue, log — sab possible!",
+  code:`// Command Interface
+class Command {
+  execute() { throw new Error('execute() implement!'); }
+  undo()    { throw new Error('undo() implement!'); }
+}
+
+// Commands
+class PlaceBetCommand extends Command {
+  #wallet; #amount; #previousBet;
+
+  constructor(wallet, amount) {
+    super();
+    this.#wallet = wallet;
+    this.#amount = amount;
+  }
+
+  execute() {
+    this.#previousBet = this.#wallet.bet;
+    this.#wallet.bet = this.#amount;
+    console.log(\`Bet placed: $\${this.#amount}\`);
+  }
+
+  undo() {
+    this.#wallet.bet = this.#previousBet;
+    console.log(\`Bet restored: $\${this.#previousBet}\`);
+  }
+}
+
+class SpinCommand extends Command {
+  #game; #result;
+
+  constructor(game) {
+    super();
+    this.#game = game;
+  }
+
+  execute() {
+    this.#result = this.#game.spin();
+    return this.#result;
+  }
+
+  undo() {
+    this.#game.reverseLastSpin(this.#result);
+  }
+}
+
+// Command Invoker — history rakho
+class CommandInvoker {
+  #history = [];
+  #redoStack = [];
+
+  execute(command) {
+    command.execute();
+    this.#history.push(command);
+    this.#redoStack = []; // Clear redo
+  }
+
+  undo() {
+    const cmd = this.#history.pop();
+    if (cmd) {
+      cmd.undo();
+      this.#redoStack.push(cmd);
+    }
+  }
+
+  redo() {
+    const cmd = this.#redoStack.pop();
+    if (cmd) {
+      cmd.execute();
+      this.#history.push(cmd);
+    }
+  }
+}
+
+const invoker = new CommandInvoker();
+invoker.execute(new PlaceBetCommand(wallet, 50));
+invoker.execute(new SpinCommand(game));
+invoker.undo(); // Last spin undo!`,
+  tip:"Auto-spin feature mein commands queue hote hain — Command pattern perfect hai!"
+},
+{
+  title:"ECS — Entity Component System",tag:"Game Specific",tagClass:"danger",
+  gaming_company:"Modern game architecture — Unity bhi ECS use karta hai! Performance best hoti hai!",
+  simple:"ECS = Entity (ID only) + Component (data only) + System (logic only). Sab alag!",
+  code:`// ENTITY — sirf ek ID
+class Entity {
+  static #nextId = 0;
+  id = Entity.#nextId++;
+}
+
+// COMPONENTS — sirf data, no logic
+class PositionComponent {
+  constructor(x = 0, y = 0) { this.x = x; this.y = y; }
+}
+
+class VelocityComponent {
+  constructor(vx = 0, vy = 0) { this.vx = vx; this.vy = vy; }
+}
+
+class RenderComponent {
+  constructor(texture) {
+    this.sprite = new PIXI.Sprite(texture);
+    this.visible = true;
+  }
+}
+
+class SymbolComponent {
+  constructor(name, value) {
+    this.name = name;
+    this.value = value;
+    this.highlighted = false;
+  }
+}
+
+// WORLD — entities + components manage karo
+class World {
+  #entities = new Map();
+  #components = new Map();
+
+  createEntity() {
+    const entity = new Entity();
+    this.#entities.set(entity.id, entity);
+    return entity;
+  }
+
+  addComponent(entityId, component) {
+    const type = component.constructor.name;
+    if (!this.#components.has(type)) {
+      this.#components.set(type, new Map());
+    }
+    this.#components.get(type).set(entityId, component);
+  }
+
+  getComponent(entityId, ComponentClass) {
+    return this.#components
+      .get(ComponentClass.name)
+      ?.get(entityId);
+  }
+
+  query(...ComponentClasses) {
+    const firstMap = this.#components
+      .get(ComponentClasses[0].name);
+    if (!firstMap) return [];
+
+    return [...firstMap.keys()].filter(id =>
+      ComponentClasses.every(C =>
+        this.#components.get(C.name)?.has(id)
+      )
+    );
+  }
+}
+
+// SYSTEMS — sirf logic, no data
+class MovementSystem {
+  update(world, delta) {
+    const entities = world.query(
+      PositionComponent, VelocityComponent
+    );
+
+    entities.forEach(id => {
+      const pos = world.getComponent(id, PositionComponent);
+      const vel = world.getComponent(id, VelocityComponent);
+      pos.x += vel.vx * delta;
+      pos.y += vel.vy * delta;
+    });
+  }
+}
+
+class RenderSystem {
+  update(world) {
+    const entities = world.query(
+      PositionComponent, RenderComponent
+    );
+    entities.forEach(id => {
+      const pos = world.getComponent(id, PositionComponent);
+      const ren = world.getComponent(id, RenderComponent);
+      ren.sprite.x = pos.x;
+      ren.sprite.y = pos.y;
+    });
+  }
+}
+
+// Use karo
+const world = new World();
+const symbol = world.createEntity();
+
+world.addComponent(symbol.id, new PositionComponent(100, 200));
+world.addComponent(symbol.id, new VelocityComponent(0, 5));
+world.addComponent(symbol.id, new RenderComponent(texture));
+world.addComponent(symbol.id, new SymbolComponent('cherry', 5));
+
+const systems = [new MovementSystem(), new RenderSystem()];
+app.ticker.add(delta => systems.forEach(s => s.update(world, delta)));`,
+  tip:"ECS advanced hai — gaming_company mein yeh jaante ho toh senior level pe samjhenge!"
+},
+{
+  title:"Scene Manager",tag:"Game Specific",tagClass:"danger",
+  gaming_company:"LoadingScene → MenuScene → GameScene → WinScene — scenes manage karna!",
+  simple:"Scene Manager = alag alag game screens manage karo. Ek baar ek scene active.",
+  code:`class Scene {
+  constructor(app) {
+    this.app = app;
+    this.container = new PIXI.Container();
+  }
+
+  onEnter(data) {} // Scene shuru
+  onExit()  {}     // Scene khatam
+  update(delta) {}
+}
+
+class SceneManager {
+  static #instance = null;
+  #scenes = new Map();
+  #current = null;
+  #app;
+
+  constructor(app) {
+    this.#app = app;
+    this.#app.ticker.add(d => this.update(d));
+  }
+
+  static getInstance(app) {
+    if (!SceneManager.#instance) {
+      SceneManager.#instance = new SceneManager(app);
+    }
+    return SceneManager.#instance;
+  }
+
+  register(name, scene) {
+    this.#scenes.set(name, scene);
+  }
+
+  async goto(name, data = {}) {
+    const next = this.#scenes.get(name);
+    if (!next) throw new Error(\`Scene not found: \${name}\`);
+
+    if (this.#current) {
+      this.#current.onExit();
+      this.#app.stage.removeChild(this.#current.container);
+    }
+
+    this.#current = next;
+    this.#app.stage.addChild(next.container);
+    await next.onEnter(data);
+  }
+
+  update(delta) {
+    this.#current?.update(delta);
+  }
+}
+
+// Scenes
+class LoadingScene extends Scene {
+  async onEnter() {
+    this.bar = new ProgressBar(this.container);
+    await AssetManager.loadAll((p) => {
+      this.bar.progress = p;
+    });
+    SceneManager.getInstance().goto('menu');
+  }
+}
+
+class GameScene extends Scene {
+  onEnter({ bet }) {
+    this.game = new SlotGame(bet);
+  }
+  update(delta) { this.game.update(delta); }
+}
+
+const sm = SceneManager.getInstance(app);
+sm.register('loading', new LoadingScene(app));
+sm.register('menu',    new MenuScene(app));
+sm.register('game',    new GameScene(app));
+
+sm.goto('loading'); // Start!`,
+  tip:"Scene Manager se loading, menu, game sab cleanly manage hota hai!"
+},
+{
+  title:"Asset Manager",tag:"Game Specific",tagClass:"danger",
+  gaming_company:"Textures, sounds, fonts — sab ek jagah se manage karo. Cache bhi ho!",
+  simple:"Asset Manager = sabhi game resources load, cache, aur provide karo. Singleton pattern use karta hai.",
+  code:`class AssetManager {
+  static #instance = null;
+  #cache = new Map();
+  #loading = new Map();
+
+  static getInstance() {
+    if (!AssetManager.#instance) {
+      AssetManager.#instance = new AssetManager();
+    }
+    return AssetManager.#instance;
+  }
+
+  async load(key, url, onProgress) {
+    // Cache mein hai toh return karo
+    if (this.#cache.has(key)) {
+      return this.#cache.get(key);
+    }
+
+    // Already load ho raha hai
+    if (this.#loading.has(key)) {
+      return this.#loading.get(key);
+    }
+
+    const promise = this.#doLoad(key, url, onProgress);
+    this.#loading.set(key, promise);
+
+    const asset = await promise;
+    this.#loading.delete(key);
+    this.#cache.set(key, asset);
+    return asset;
+  }
+
+  async #doLoad(key, url, onProgress) {
+    if (url.endsWith('.png') || url.endsWith('.jpg')) {
+      return await PIXI.Assets.load(url);
+    }
+    if (url.endsWith('.mp3') || url.endsWith('.ogg')) {
+      return new Howl({ src: [url] });
+    }
+    if (url.endsWith('.json')) {
+      const r = await fetch(url);
+      return r.json();
+    }
+  }
+
+  async loadBundle(manifest, onProgress) {
+    const keys = Object.keys(manifest);
+    let loaded = 0;
+
+    await Promise.all(keys.map(async (key) => {
+      await this.load(key, manifest[key]);
+      loaded++;
+      onProgress?.(loaded / keys.length);
+    }));
+  }
+
+  get(key) { return this.#cache.get(key); }
+  has(key) { return this.#cache.has(key); }
+  clear()  { this.#cache.clear(); }
+}
+
+// Use karo
+const assets = AssetManager.getInstance();
+
+await assets.loadBundle({
+  cherry:  'symbols/cherry.png',
+  seven:   'symbols/seven.png',
+  winSfx:  'audio/win.mp3',
+  config:  'data/paytable.json',
+}, (progress) => {
+  loadingBar.value = progress * 100;
+});
+
+const cherry = assets.get('cherry'); // Cache se!`,
+  tip:"Asset Manager se game ek baar load karta hai — speed best hoti hai!"
+},
+{
+  title:"Full gaming_company Game Architecture",tag:"gaming_company Level",tagClass:"danger",
+  gaming_company:"Yeh sab patterns ek saath — real gaming_company level slot game structure!",
+  simple:"Sab patterns combine karo — yahi production level game architecture hai!",
+  code:`// gaming_company PRODUCTION ARCHITECTURE
+// ================================
+
+// 1. SINGLETON — Global managers
+const eventBus    = EventBus.getInstance();
+const assetMgr    = AssetManager.getInstance();
+const sceneMgr    = SceneManager.getInstance(app);
+
+// 2. FACTORY — Symbol creation
+const symbol = SymbolFactory.create('cherry', 0, 0);
+
+// 3. OBJECT POOL — Performance
+const particlePool = new ObjectPool(
+  () => new Particle(), 100
+);
+
+// 4. STATE MACHINE — Game flow
+const gameState = new StateMachine();
+gameState
+  .on('SPINNING', startReels)
+  .on('WIN',      showWinScreen)
+  .on('IDLE',     enableSpinButton);
+
+// 5. EVENT BUS — Decoupled comms
+eventBus.on('reel:stopped', onReelStopped);
+eventBus.on('win:calculated', onWinResult);
+eventBus.on('balance:changed', updateBalanceUI);
+
+// 6. MVVM — Reactive UI
+const vm = new GameViewModel(new GameModel());
+vm.observe('balance', val => balanceUI.update(val));
+vm.observe('bet',     val => betUI.update(val));
+
+// 7. STRATEGY — Win calculation
+const strategies = {
+  normal:    new NormalWinStrategy(),
+  bonus:     new BonusWinStrategy(),
+  freeSpin:  new FreeSpinStrategy(),
+};
+let currentStrategy = strategies.normal;
+
+// 8. COMMAND — Actions with history
+const invoker = new CommandInvoker();
+
+// 9. OBSERVER — Reactive data
+const balance = new Observable(1000);
+balance.subscribe(v => vm.updateBalance(v));
+
+// 10. COMPONENTS — UI pieces
+const reelComponents = Array(5).fill(null)
+  .map((_, i) => new ReelComponent(i, i*160));
+
+// GAME LOOP — ties it all together
+app.ticker.add((delta) => {
+  reelComponents.forEach(r => r.update(delta));
+  particlePool.update(delta);
+});
+
+// SPIN FLOW:
+// SpinBtn click
+//   → Command pattern (SpinCommand.execute)
+//   → StateMachine.transition('SPINNING')
+//   → EventBus.emit('spin:start')
+//   → ReelComponents start spinning
+//   → All reels stop → EventBus.emit('reel:stopped')
+//   → WinStrategy.calculate(results, bet)
+//   → balance.value += winAmount (Observable)
+//   → StateMachine.transition('WIN' or 'IDLE')
+//   → SceneManager shows win screen if big win
+
+console.log('gaming_company Level Architecture Ready!');`,
+  tip:"Yeh pattern jaano aur Day 1 se senior developer ki tarah baat karo!"
+}
+];
+
+function show(index) {
+  const t = topics[index];
+  document.querySelectorAll('.btn').forEach((b,i) => b.classList.toggle('active', i===index));
+
+  document.getElementById('content').innerHTML = `
+    <div style="padding:0 0 0 8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <h3 style="margin:0;font-size:16px;font-weight:500;">${t.title}</h3>
+        <span class="tag ${t.tagClass}">${t.tag}</span>
+      </div>
+
+      <div style="margin-bottom:10px;">
+        <p style="font-size:13px;margin:0 0 6px;padding:8px 10px;background:var(--color-background-info);border-radius:var(--border-radius-md);color:var(--color-text-info);">${t.gaming_company}</p>
+      </div>
+
+      <div style="margin-bottom:8px;">
+        <p style="font-size:12px;color:var(--color-text-secondary);margin:0 0 3px;">Simple matlab</p>
+        <p style="font-size:13px;color:var(--color-text-primary);margin:0;">${t.simple}</p>
+      </div>
+
+      <p style="font-size:12px;color:var(--color-text-secondary);margin:6px 0 2px;">Code</p>
+      <div class="code">${t.code}</div>
+
+      <div style="padding:8px 10px;background:var(--color-background-success);border-radius:var(--border-radius-md);">
+        <p style="font-size:12px;color:var(--color-text-success);margin:0;"><strong>gaming_company tip:</strong> ${t.tip}</p>
+      </div>
+    </div>
+  `;
+}
+
+show(0);
+</script>

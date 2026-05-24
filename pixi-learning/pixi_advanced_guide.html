@@ -1,0 +1,509 @@
+
+<style>
+.topic-btn { cursor: pointer; padding: 10px 14px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); font-size: 14px; text-align: left; width: 100%; margin-bottom: 8px; transition: background 0.15s; }
+.topic-btn:hover { background: var(--color-background-secondary); }
+.topic-btn.active { border-color: var(--color-border-info); background: var(--color-background-info); color: var(--color-text-info); }
+.code-block { background: var(--color-background-tertiary); border-radius: var(--border-radius-md); padding: 12px; font-family: monospace; font-size: 13px; color: var(--color-text-primary); overflow-x: auto; margin: 10px 0; white-space: pre; }
+.section { margin-bottom: 16px; }
+.label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: var(--border-radius-md); font-size: 12px; margin-right: 4px; background: var(--color-background-success); color: var(--color-text-success); }
+.tag.hard { background: var(--color-background-danger); color: var(--color-text-danger); }
+.tag.med { background: var(--color-background-warning); color: var(--color-text-warning); }
+</style>
+
+<h2 class="sr-only">PixiJS Advanced Learning Guide for gaming_company</h2>
+
+<div style="display: grid; grid-template-columns: 220px 1fr; gap: 16px; padding: 1rem 0;">
+
+<div>
+  <p style="font-size: 13px; color: var(--color-text-secondary); margin: 0 0 10px;">Topic chuno:</p>
+  <button class="topic-btn active" onclick="show(0)">1. Sprite Pool & Memory</button>
+  <button class="topic-btn" onclick="show(1)">2. Slot Reel Logic</button>
+  <button class="topic-btn" onclick="show(2)">3. Ticker & Game Loop</button>
+  <button class="topic-btn" onclick="show(3)">4. Tween Animations</button>
+  <button class="topic-btn" onclick="show(4)">5. Asset Loader</button>
+  <button class="topic-btn" onclick="show(5)">6. Win Line Logic</button>
+  <button class="topic-btn" onclick="show(6)">7. State Machine</button>
+  <button class="topic-btn" onclick="show(7)">8. Particle Effects</button>
+</div>
+
+<div id="content" style="min-height: 400px;"></div>
+</div>
+
+<script>
+const topics = [
+  {
+    title: "Sprite Pool & Memory Management",
+    level: "med",
+    levelText: "Medium",
+    gaming_company: "Slot games mein bahut sprites hoti hain — memory optimize karna zaroori hai!",
+    concept: "Sprites baar baar create/destroy karna slow hota hai. Pool mein pre-create karo aur reuse karo.",
+    code: `// Sprite Pool — gaming_company level pattern
+class SpritePool {
+  constructor(texture, size = 20) {
+    this.pool = [];
+    // Pre-create sprites
+    for (let i = 0; i < size; i++) {
+      const sprite = new PIXI.Sprite(texture);
+      sprite.visible = false;
+      this.pool.push(sprite);
+    }
+  }
+
+  // Pool se sprite lo
+  get() {
+    const sprite = this.pool.find(s => !s.visible);
+    if (sprite) {
+      sprite.visible = true;
+      return sprite;
+    }
+    return null; // Pool full hai
+  }
+
+  // Sprite wapas karo
+  release(sprite) {
+    sprite.visible = false;
+    sprite.x = 0;
+    sprite.y = 0;
+  }
+}
+
+// Use karo
+const pool = new SpritePool(texture, 50);
+const coin = pool.get();
+// ... use karo
+pool.release(coin); // Destroy nahi, reuse!`,
+    tip: "Slot games mein har symbol ek pool se aata hai — yahi gaming_company mein hoga!"
+  },
+  {
+    title: "Slot Reel Logic",
+    level: "hard",
+    levelText: "Advanced",
+    gaming_company: "gaming_company ka core kaam — slot reels banana aur spin karna!",
+    concept: "Reel = vertical strip of symbols. Spin = symbols upar se neeche scroll karte hain, phir stop hote hain.",
+    code: `// Slot Reel — Basic Structure
+class Reel {
+  constructor(app, symbols, x) {
+    this.container = new PIXI.Container();
+    this.container.x = x;
+    this.symbols = [];
+    this.position = 0;
+    this.speed = 0;
+    this.isSpinning = false;
+
+    // 5 symbols per reel
+    for (let i = 0; i < 5; i++) {
+      const symbol = new PIXI.Sprite(
+        getRandomTexture(symbols)
+      );
+      symbol.y = i * 150; // 150px per symbol
+      this.container.addChild(symbol);
+      this.symbols.push(symbol);
+    }
+
+    app.stage.addChild(this.container);
+  }
+
+  // Spin shuru karo
+  startSpin() {
+    this.isSpinning = true;
+    this.speed = 50; // pixels per frame
+  }
+
+  // Har frame update
+  update() {
+    if (!this.isSpinning) return;
+
+    this.position += this.speed;
+
+    // Symbols scroll karo
+    this.symbols.forEach((symbol, i) => {
+      symbol.y = (
+        (this.position + i * 150) % (5 * 150)
+      );
+    });
+  }
+
+  // Stop karo target position pe
+  stopAt(targetSymbol) {
+    this.isSpinning = false;
+    // Smooth stop logic yahan aayega
+  }
+}`,
+    tip: "Har reel independent hoti hai — gaming_company mein 5 reels hogi usually!"
+  },
+  {
+    title: "Ticker & Game Loop",
+    level: "easy",
+    levelText: "Easy",
+    gaming_company: "Har game ka heartbeat — gaming_company mein sab kuch Ticker se chalta hai!",
+    concept: "PixiJS Ticker har frame callback call karta hai — yahan game state update hoti hai.",
+    code: `// PixiJS Ticker — Game Loop
+const app = new PIXI.Application({
+  width: 1280,
+  height: 720,
+  backgroundColor: 0x1a1a2e
+});
+
+// Delta time — frame rate independent movement
+app.ticker.add((delta) => {
+  // delta = time since last frame
+
+  // Reels update karo
+  reels.forEach(reel => reel.update(delta));
+
+  // Animations update karo
+  animationManager.update(delta);
+
+  // Particles update karo
+  particleSystem.update(delta);
+});
+
+// FPS control — gaming_company standard 60fps
+app.ticker.maxFPS = 60;
+
+// Ticker pause karo (game pause)
+app.ticker.stop();
+
+// Ticker resume karo
+app.ticker.start();
+
+// Specific speed
+app.ticker.speed = 0.5; // Slow motion!`,
+    tip: "Delta time use karo — different devices pe same speed milega!"
+  },
+  {
+    title: "Tween Animations",
+    level: "med",
+    levelText: "Medium",
+    gaming_company: "Win animations, symbol effects — sab tween se hota hai!",
+    concept: "Tween = smooth transition between two values. GSAP ya custom tween use hota hai.",
+    code: `// Custom Tween — gaming_company mein GSAP bhi use hota hai
+class Tween {
+  constructor(target, props, duration, easing) {
+    this.target = target;
+    this.startProps = {};
+    this.endProps = props;
+    this.duration = duration;
+    this.elapsed = 0;
+    this.easing = easing || this.easeOut;
+    this.done = false;
+
+    // Start values save karo
+    Object.keys(props).forEach(key => {
+      this.startProps[key] = target[key];
+    });
+  }
+
+  // Ease out — natural feel
+  easeOut(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  update(delta) {
+    if (this.done) return;
+    this.elapsed += delta / 60;
+
+    const progress = Math.min(
+      this.elapsed / this.duration, 1
+    );
+    const eased = this.easing(progress);
+
+    // Values interpolate karo
+    Object.keys(this.endProps).forEach(key => {
+      const start = this.startProps[key];
+      const end = this.endProps[key];
+      this.target[key] = start + (end - start) * eased;
+    });
+
+    if (progress >= 1) this.done = true;
+  }
+}
+
+// Use karo — symbol bounce
+const tween = new Tween(
+  symbol,
+  { y: symbol.y - 30, alpha: 0 },
+  0.5
+);`,
+    tip: "Win animation mein symbols bounce karte hain — yahi tween se hota hai!"
+  },
+  {
+    title: "Asset Loader",
+    level: "easy",
+    levelText: "Easy",
+    gaming_company: "Game start hone se pehle sab assets load karna zaroori hai!",
+    concept: "PIXI.Assets se textures, sounds, fonts preload karo — tabhi game smooth chalta hai.",
+    code: `// PIXI.Assets — Modern Loader (v7+)
+async function loadGameAssets() {
+
+  // Manifest define karo
+  await PIXI.Assets.init({
+    manifest: {
+      bundles: [
+        {
+          name: 'slot-symbols',
+          assets: [
+            { alias: 'cherry', src: 'cherry.png' },
+            { alias: 'seven', src: 'seven.png' },
+            { alias: 'bar', src: 'bar.png' },
+            { alias: 'wild', src: 'wild.png' },
+          ]
+        },
+        {
+          name: 'ui',
+          assets: [
+            { alias: 'button', src: 'button.png' },
+            { alias: 'frame', src: 'frame.png' },
+          ]
+        }
+      ]
+    }
+  });
+
+  // Progress track karo
+  await PIXI.Assets.loadBundle(
+    'slot-symbols',
+    (progress) => {
+      loadingBar.width = progress * 400;
+      loadingText.text = 
+        \`Loading... \${Math.round(progress * 100)}%\`;
+    }
+  );
+
+  // Ab use karo
+  const cherry = PIXI.Texture.from('cherry');
+}`,
+    tip: "Loading screen gaming_company ke har game mein hoti hai — progress bar zaroor dikhao!"
+  },
+  {
+    title: "Win Line Logic",
+    level: "hard",
+    levelText: "Advanced",
+    gaming_company: "Slot game ka core — kaunsi line win hui yeh calculate karna!",
+    concept: "Win lines = patterns on the grid. Check karo ki matching symbols kahan hain.",
+    code: `// Win Line Calculator
+const WIN_LINES = [
+  [0,0, 1,0, 2,0, 3,0, 4,0], // Top row
+  [0,1, 1,1, 2,1, 3,1, 4,1], // Middle row
+  [0,2, 1,2, 2,2, 3,2, 4,2], // Bottom row
+  [0,0, 1,1, 2,2, 3,1, 4,0], // V shape
+  [0,2, 1,1, 2,0, 3,1, 4,2], // ^ shape
+];
+
+// Grid = 5 reels x 3 rows
+function checkWins(grid, betPerLine) {
+  const wins = [];
+
+  WIN_LINES.forEach((line, lineIndex) => {
+    const symbols = [];
+
+    // Line ke symbols nikalo
+    for (let i = 0; i < 5; i++) {
+      const reel = line[i * 2];
+      const row = line[i * 2 + 1];
+      symbols.push(grid[reel][row]);
+    }
+
+    // Matching symbols count karo
+    const firstSymbol = symbols[0];
+    let matchCount = 1;
+
+    for (let i = 1; i < 5; i++) {
+      if (symbols[i] === firstSymbol || 
+          symbols[i] === 'WILD') {
+        matchCount++;
+      } else break;
+    }
+
+    // 3+ match = win!
+    if (matchCount >= 3) {
+      const multiplier = getMultiplier(
+        firstSymbol, matchCount
+      );
+      wins.push({
+        lineIndex,
+        symbol: firstSymbol,
+        count: matchCount,
+        payout: betPerLine * multiplier
+      });
+    }
+  });
+
+  return wins;
+}`,
+    tip: "WILD symbol sab ko replace karta hai — yeh logic zaroori hai!"
+  },
+  {
+    title: "State Machine",
+    level: "med",
+    levelText: "Medium",
+    gaming_company: "Game ka flow control — IDLE, SPIN, WIN, BONUS states!",
+    concept: "State machine = game ki current state track karo. Ek state se doosri state mein transition.",
+    code: `// Game State Machine
+const STATES = {
+  IDLE: 'IDLE',       // Spin button wait
+  SPINNING: 'SPINNING', // Reels ghoom rahi hain
+  STOPPING: 'STOPPING',  // Reels ruk rahi hain
+  WIN: 'WIN',          // Win animation
+  BONUS: 'BONUS',      // Bonus round
+  FREE_SPIN: 'FREE_SPIN' // Free spins
+};
+
+class GameStateMachine {
+  constructor() {
+    this.state = STATES.IDLE;
+    this.listeners = {};
+  }
+
+  // State change karo
+  transition(newState) {
+    const oldState = this.state;
+    this.state = newState;
+
+    console.log(\`\${oldState} → \${newState}\`);
+
+    // Listeners notify karo
+    this.emit(newState, oldState);
+  }
+
+  // State check karo
+  is(state) {
+    return this.state === state;
+  }
+
+  // Event system
+  on(state, callback) {
+    if (!this.listeners[state]) {
+      this.listeners[state] = [];
+    }
+    this.listeners[state].push(callback);
+  }
+
+  emit(state, oldState) {
+    (this.listeners[state] || [])
+      .forEach(cb => cb(oldState));
+  }
+}
+
+// Use karo
+const game = new GameStateMachine();
+
+game.on(STATES.WIN, () => {
+  showWinAnimation();
+  updateBalance();
+});
+
+// Spin button click
+spinBtn.on('click', () => {
+  if (game.is(STATES.IDLE)) {
+    game.transition(STATES.SPINNING);
+    startAllReels();
+  }
+});`,
+    tip: "gaming_company ke games mein yahi pattern hoga — pehle yeh samjho!"
+  },
+  {
+    title: "Particle Effects",
+    level: "med",
+    levelText: "Medium",
+    gaming_company: "Win pe coins girte hain, confetti — sab particles se hota hai!",
+    concept: "Particles = bahut saare chhote sprites jo physics follow karte hain.",
+    code: `// Particle System — Win Celebration
+class ParticleSystem {
+  constructor(app, texture) {
+    this.app = app;
+    this.texture = texture;
+    this.particles = [];
+    this.container = new PIXI.Container();
+    app.stage.addChild(this.container);
+  }
+
+  // Particles emit karo
+  emit(x, y, count = 20) {
+    for (let i = 0; i < count; i++) {
+      const particle = new PIXI.Sprite(this.texture);
+      particle.x = x;
+      particle.y = y;
+      particle.scale.set(Math.random() * 0.5 + 0.3);
+
+      // Random velocity
+      particle.vx = (Math.random() - 0.5) * 10;
+      particle.vy = (Math.random() - 1) * 15;
+      particle.gravity = 0.5;
+      particle.life = 1.0; // Full life
+      particle.decay = Math.random() * 0.02 + 0.01;
+
+      this.container.addChild(particle);
+      this.particles.push(particle);
+    }
+  }
+
+  // Har frame update
+  update(delta) {
+    for (let i = this.particles.length - 1; i >= 0; i--) {
+      const p = this.particles[i];
+
+      // Physics apply karo
+      p.vy += p.gravity * delta;
+      p.x += p.vx * delta;
+      p.y += p.vy * delta;
+      p.life -= p.decay * delta;
+      p.alpha = p.life;
+
+      // Dead particles remove karo
+      if (p.life <= 0) {
+        this.container.removeChild(p);
+        this.particles.splice(i, 1);
+      }
+    }
+  }
+}
+
+// Win pe use karo!
+const coins = new ParticleSystem(app, coinTexture);
+coins.emit(640, 360, 50); // Center pe 50 coins!`,
+    tip: "Big Win pe zyada particles — Small Win pe kam!"
+  }
+];
+
+function show(index) {
+  const topic = topics[index];
+
+  document.querySelectorAll('.topic-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', i === index);
+  });
+
+  const levelClass = topic.level === 'hard' ? 'hard' : topic.level === 'easy' ? '' : 'med';
+
+  document.getElementById('content').innerHTML = `
+    <div style="padding: 0 0 0 8px;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+        <h3 style="margin: 0; font-size: 16px; font-weight: 500;">${topic.title}</h3>
+        <span class="tag ${levelClass}">${topic.levelText}</span>
+      </div>
+
+      <div class="section">
+        <p class="label">gaming_company mein kyun zaroori hai</p>
+        <p style="font-size: 14px; color: var(--color-text-primary); margin: 0; padding: 10px; background: var(--color-background-info); border-radius: var(--border-radius-md); color: var(--color-text-info);">${topic.gaming_company}</p>
+      </div>
+
+      <div class="section">
+        <p class="label">Concept</p>
+        <p style="font-size: 14px; color: var(--color-text-secondary); margin: 0;">${topic.concept}</p>
+      </div>
+
+      <div class="section">
+        <p class="label">Code — VS Code mein practice karo</p>
+        <div class="code-block">${topic.code}</div>
+      </div>
+
+      <div style="padding: 10px; background: var(--color-background-success); border-radius: var(--border-radius-md);">
+        <p style="font-size: 13px; color: var(--color-text-success); margin: 0;"><strong>Tip:</strong> ${topic.tip}</p>
+      </div>
+    </div>
+  `;
+}
+
+show(0);
+</script>

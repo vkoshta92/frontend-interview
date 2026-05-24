@@ -737,7 +737,7 @@ International clients ke liye
 | Timeline | Role | Salary |
 |----------|------|--------|
 | Now | Game Developer (Bonanza) | 4.7 LPA |
-| 1 Year | Game Developer (ZVKY) | 9.5 LPA |
+| 1 Year | Game Developer (gaming_company) | 9.5 LPA |
 | 2 Years | Senior Game Developer (Noida) | 12-14 LPA |
 | 4 Years | Lead Game Developer | 20-25 LPA |
 | 6 Years | Principal / Architect | 35-50 LPA |

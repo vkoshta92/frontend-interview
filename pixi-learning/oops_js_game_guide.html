@@ -1,0 +1,678 @@
+
+<style>
+.btn { cursor: pointer; padding: 8px 14px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); font-size: 13px; text-align: left; width: 100%; margin-bottom: 6px; }
+.btn:hover { background: var(--color-background-secondary); }
+.btn.active { border-color: var(--color-border-info); background: var(--color-background-info); color: var(--color-text-info); }
+.code { background: var(--color-background-tertiary); border-radius: var(--border-radius-md); padding: 12px; font-family: monospace; font-size: 12px; color: var(--color-text-primary); overflow-x: auto; margin: 8px 0; white-space: pre; line-height: 1.5; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: var(--border-radius-md); font-size: 11px; margin-right: 4px; }
+.info { background: var(--color-background-info); color: var(--color-text-info); }
+.success { background: var(--color-background-success); color: var(--color-text-success); }
+.warn { background: var(--color-background-warning); color: var(--color-text-warning); }
+.muted { font-size: 13px; color: var(--color-text-secondary); margin: 0 0 8px; }
+.section { margin-bottom: 14px; }
+</style>
+
+<h2 class="sr-only">OOP Concepts in JavaScript for Game Development</h2>
+
+<div style="display: grid; grid-template-columns: 200px minmax(0,1fr); gap: 16px; padding: 1rem 0;">
+<div>
+  <p style="font-size: 12px; color: var(--color-text-secondary); margin: 0 0 8px;">Concept chuno:</p>
+  <button class="btn active" onclick="show(0)">1. Class & Object</button>
+  <button class="btn" onclick="show(1)">2. Constructor</button>
+  <button class="btn" onclick="show(2)">3. Inheritance</button>
+  <button class="btn" onclick="show(3)">4. Encapsulation</button>
+  <button class="btn" onclick="show(4)">5. Polymorphism</button>
+  <button class="btn" onclick="show(5)">6. Static</button>
+  <button class="btn" onclick="show(6)">7. Override</button>
+  <button class="btn" onclick="show(7)">8. Abstract Pattern</button>
+  <button class="btn" onclick="show(8)">9. Getter/Setter</button>
+  <button class="btn" onclick="show(9)">10. Game Example</button>
+</div>
+
+<div id="content" style="min-height: 500px;"></div>
+</div>
+
+<script>
+const topics = [
+  {
+    title: "Class & Object",
+    tag: "Basic", tagClass: "success",
+    game: "Har game element ek object hota hai — Symbol, Reel, Button sab class se bante hain!",
+    simple: "Class = blueprint. Object = us blueprint se bana real item.",
+    code: `// Class = Symbol ka blueprint
+class Symbol {
+  constructor(name, value) {
+    this.name = name;    // 'cherry', 'seven'
+    this.value = value;  // win multiplier
+    this.x = 0;
+    this.y = 0;
+  }
+
+  display() {
+    console.log(\`\${this.name} at (\${this.x}, \${this.y})\`);
+  }
+}
+
+// Objects banao — same class se alag alag
+const cherry = new Symbol('cherry', 5);
+const seven  = new Symbol('seven', 100);
+const wild   = new Symbol('wild', 0);
+
+cherry.x = 100;
+cherry.display(); // cherry at (100, 0)
+seven.display();  // seven at (0, 0)
+
+// Har symbol alag object hai!
+console.log(cherry === seven); // false`,
+    tip: "gaming_company mein har slot symbol ek Symbol object hoga!"
+  },
+  {
+    title: "Constructor",
+    tag: "Basic", tagClass: "success",
+    game: "Game shuru hone pe objects initialize karne ke liye constructor use hota hai!",
+    simple: "Constructor = class ka pehla method jo object banate waqt automatically chalta hai.",
+    code: `class Reel {
+  constructor(id, symbolCount, speed) {
+    // Yeh sab automatically set hota hai
+    // jab new Reel() likhte hain
+    this.id = id;
+    this.symbolCount = symbolCount;
+    this.speed = speed;
+    this.isSpinning = false;
+    this.symbols = [];
+    this.currentPosition = 0;
+
+    // Constructor mein kaam bhi kar sakte hain
+    this.initialize();
+  }
+
+  initialize() {
+    console.log(\`Reel \${this.id} ready!\`);
+    // Symbols populate karo
+    for (let i = 0; i < this.symbolCount; i++) {
+      this.symbols.push(getRandomSymbol());
+    }
+  }
+}
+
+// Constructor automatically chalta hai
+const reel1 = new Reel(1, 20, 50);
+const reel2 = new Reel(2, 20, 60);
+const reel3 = new Reel(3, 20, 55);
+
+// Har reel apni values ke saath ready!
+console.log(reel1.id);    // 1
+console.log(reel2.speed); // 60`,
+    tip: "Default values constructor mein set karo — baad mein change kar sakte ho!"
+  },
+  {
+    title: "Inheritance (extends)",
+    tag: "Important", tagClass: "info",
+    game: "BaseGame class banao — SlotGame aur PokerGame usse inherit karein!",
+    simple: "Inheritance = child class parent ki sab properties aur methods le leti hai. Code reuse hota hai!",
+    code: `// Parent class — base game
+class GameObject {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.visible = true;
+    this.alpha = 1;
+  }
+
+  show() { this.visible = true; }
+  hide() { this.visible = false; }
+
+  moveTo(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+}
+
+// Child class — Symbol inherits GameObject
+class Symbol extends GameObject {
+  constructor(x, y, name, value) {
+    super(x, y); // Parent constructor call
+    this.name = name;
+    this.value = value;
+  }
+
+  highlight() {
+    this.alpha = 0.5; // Dim karo
+    // Parent ki moveTo bhi use kar sakte hain!
+  }
+}
+
+// Child class — Button inherits GameObject
+class Button extends GameObject {
+  constructor(x, y, label) {
+    super(x, y);
+    this.label = label;
+    this.enabled = true;
+  }
+
+  click() {
+    if (this.enabled) {
+      console.log(\`\${this.label} clicked!\`);
+    }
+  }
+}
+
+const cherry = new Symbol(100, 200, 'cherry', 5);
+cherry.moveTo(150, 200); // Parent method!
+cherry.highlight();       // Own method!
+
+const spinBtn = new Button(400, 500, 'SPIN');
+spinBtn.click(); // SPIN clicked!`,
+    tip: "extends keyword se inheritance hoti hai — super() parent constructor call karta hai!"
+  },
+  {
+    title: "Encapsulation (private)",
+    tag: "Important", tagClass: "info",
+    game: "Game balance private rakhna chahiye — koi bhi seedha change na kar sake!",
+    simple: "Encapsulation = data chhupaao aur sirf methods se access do. # se private variable banta hai.",
+    code: `class GameBalance {
+  // Private variable — # se start
+  #balance = 0;
+  #betAmount = 1;
+  #history = [];
+
+  constructor(startBalance) {
+    this.#balance = startBalance;
+  }
+
+  // Public methods se hi access
+  getBalance() {
+    return this.#balance;
+  }
+
+  placeBet(amount) {
+    if (amount > this.#balance) {
+      console.log('Insufficient balance!');
+      return false;
+    }
+    if (amount < 0) {
+      console.log('Invalid bet!');
+      return false;
+    }
+    this.#balance -= amount;
+    this.#betAmount = amount;
+    this.#history.push({ type: 'bet', amount });
+    return true;
+  }
+
+  addWin(amount) {
+    this.#balance += amount;
+    this.#history.push({ type: 'win', amount });
+  }
+
+  getHistory() {
+    return [...this.#history]; // Copy return karo
+  }
+}
+
+const wallet = new GameBalance(1000);
+
+// Sahi tarika
+wallet.placeBet(50);
+console.log(wallet.getBalance()); // 950
+
+// Galat tarika — private access nahi hoga!
+// wallet.#balance = 99999; // ERROR!`,
+    tip: "# private field JS mein — balance hack proof ho jaata hai!"
+  },
+  {
+    title: "Polymorphism",
+    tag: "Advanced", tagClass: "warn",
+    game: "Alag alag symbols ka win calculation alag hota hai — same method, alag behavior!",
+    simple: "Polymorphism = same method naam, alag alag behavior. Har class apna implementation deti hai.",
+    code: `// Base symbol class
+class BaseSymbol {
+  constructor(name) {
+    this.name = name;
+  }
+
+  // Base method
+  calculateWin(bet, matchCount) {
+    return 0; // Default — no win
+  }
+
+  toString() {
+    return this.name;
+  }
+}
+
+// Alag alag symbols — alag win logic
+class RegularSymbol extends BaseSymbol {
+  constructor(name, multipliers) {
+    super(name);
+    this.multipliers = multipliers; // [0,0,5,20,100]
+  }
+
+  calculateWin(bet, matchCount) {
+    // Same method naam — alag logic!
+    return bet * this.multipliers[matchCount];
+  }
+}
+
+class WildSymbol extends BaseSymbol {
+  constructor() {
+    super('WILD');
+  }
+
+  calculateWin(bet, matchCount) {
+    // Wild = double multiplier!
+    return bet * matchCount * 2;
+  }
+}
+
+class ScatterSymbol extends BaseSymbol {
+  constructor() {
+    super('SCATTER');
+  }
+
+  calculateWin(bet, matchCount) {
+    // Scatter = total bet pe win!
+    if (matchCount >= 3) return bet * 10;
+    return 0;
+  }
+}
+
+// Same method — alag behavior!
+const symbols = [
+  new RegularSymbol('cherry', [0,0,5,20,100]),
+  new WildSymbol(),
+  new ScatterSymbol()
+];
+
+symbols.forEach(sym => {
+  // Polymorphism! Same call — alag result
+  console.log(sym.calculateWin(10, 3));
+  // cherry: 50, wild: 60, scatter: 100
+});`,
+    tip: "gaming_company mein har symbol type ka win calculation alag hoga — yahi polymorphism hai!"
+  },
+  {
+    title: "Static Methods & Properties",
+    tag: "Important", tagClass: "info",
+    game: "Game config, constants, utility functions — sab static hote hain!",
+    simple: "Static = object banaye bina directly class se call kar sakte hain. Shared data ke liye.",
+    code: `class GameConfig {
+  // Static properties — sab shared karte hain
+  static MIN_BET = 1;
+  static MAX_BET = 100;
+  static REELS = 5;
+  static ROWS = 3;
+  static RTP = 96.5; // Return to player %
+
+  // Static method — object banana nahi padta
+  static isValidBet(amount) {
+    return amount >= this.MIN_BET &&
+           amount <= this.MAX_BET;
+  }
+
+  static formatCurrency(amount) {
+    return \`$\${amount.toFixed(2)}\`;
+  }
+}
+
+class MathUtils {
+  // Utility functions — static perfect hai
+  static randomInt(min, max) {
+    return Math.floor(
+      Math.random() * (max - min + 1) + min
+    );
+  }
+
+  static clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
+
+  static lerp(start, end, t) {
+    return start + (end - start) * t;
+  }
+}
+
+// Static use karo — new nahi karna!
+console.log(GameConfig.REELS);    // 5
+console.log(GameConfig.isValidBet(50)); // true
+console.log(GameConfig.isValidBet(500)); // false
+console.log(GameConfig.formatCurrency(95.5)); // $95.50
+
+const rand = MathUtils.randomInt(1, 10);
+const clamped = MathUtils.clamp(150, 0, 100); // 100`,
+    tip: "Constants aur utility functions ko hamesha static banao!"
+  },
+  {
+    title: "Method Override",
+    tag: "Advanced", tagClass: "warn",
+    game: "Parent ka method override karke apna behavior add karo — super() se parent bhi chala sakte ho!",
+    simple: "Override = child class mein parent ka same method naam use karo — apna logic daalo.",
+    code: `class BaseAnimation {
+  constructor(target) {
+    this.target = target;
+    this.duration = 1;
+    this.elapsed = 0;
+  }
+
+  // Parent method
+  update(delta) {
+    this.elapsed += delta / 60;
+    console.log('Base update running');
+  }
+
+  isComplete() {
+    return this.elapsed >= this.duration;
+  }
+}
+
+// Child — override karo
+class WinAnimation extends BaseAnimation {
+  constructor(target, winAmount) {
+    super(target);
+    this.winAmount = winAmount;
+    this.duration = 2; // Override duration
+    this.scale = 1;
+  }
+
+  // Override — parent method replace
+  update(delta) {
+    super.update(delta); // Parent bhi chala!
+
+    // Apna extra logic add karo
+    const progress = this.elapsed / this.duration;
+    this.scale = 1 + Math.sin(progress * Math.PI) * 0.3;
+    this.target.scale.set(this.scale);
+  }
+}
+
+class SpinAnimation extends BaseAnimation {
+  constructor(target) {
+    super(target);
+    this.rotation = 0;
+  }
+
+  // Override — alag behavior
+  update(delta) {
+    super.update(delta);
+    this.rotation += 0.1 * delta;
+    this.target.rotation = this.rotation;
+  }
+}
+
+// Same update() call — alag behavior!
+const winAnim = new WinAnimation(symbol, 500);
+const spinAnim = new SpinAnimation(reel);
+
+winAnim.update(1);  // Scale animation
+spinAnim.update(1); // Rotation animation`,
+    tip: "super.update() parent ko bhi chala — phir apna logic add karo!"
+  },
+  {
+    title: "Abstract Pattern",
+    tag: "Advanced", tagClass: "warn",
+    game: "Base game class banao jise extend karna zaroori ho — direct use nahi ho!",
+    simple: "JS mein abstract class nahi hai — but pattern se implement kar sakte hain. Error throw karo!",
+    code: `// Abstract class pattern in JS
+class AbstractGame {
+  constructor(config) {
+    // Direct instantiation rok do
+    if (new.target === AbstractGame) {
+      throw new Error(
+        'AbstractGame directly use nahi kar sakte!'
+      );
+    }
+    this.config = config;
+    this.isRunning = false;
+  }
+
+  // Abstract methods — override zaroori hai
+  initialize() {
+    throw new Error('initialize() implement karo!');
+  }
+
+  onSpin() {
+    throw new Error('onSpin() implement karo!');
+  }
+
+  calculateWin() {
+    throw new Error('calculateWin() implement karo!');
+  }
+
+  // Concrete method — sab use kar sakte hain
+  start() {
+    this.initialize();
+    this.isRunning = true;
+    console.log('Game started!');
+  }
+
+  stop() {
+    this.isRunning = false;
+  }
+}
+
+// Concrete class — implement karo
+class SlotGame extends AbstractGame {
+  constructor(config) {
+    super(config);
+    this.reels = [];
+  }
+
+  initialize() {
+    // Abstract method implement kiya!
+    this.reels = Array(5).fill(null).map(
+      (_, i) => new Reel(i)
+    );
+    console.log('Slot game initialized!');
+  }
+
+  onSpin() {
+    this.reels.forEach(r => r.startSpin());
+  }
+
+  calculateWin() {
+    return checkWinLines(this.reels);
+  }
+}
+
+const game = new SlotGame({ bet: 10 });
+game.start(); // Works!
+
+// const base = new AbstractGame({}); // ERROR!`,
+    tip: "new.target check karo — abstract pattern implement karne ka best tarika!"
+  },
+  {
+    title: "Getter & Setter",
+    tag: "Important", tagClass: "info",
+    game: "Balance update hone pe automatically UI update ho — getter/setter se possible!",
+    simple: "Getter = property read karne pe auto function chale. Setter = property set karne pe auto function.",
+    code: `class PlayerWallet {
+  #_balance = 0;
+  #_bet = 1;
+
+  constructor(balance) {
+    this.#_balance = balance;
+  }
+
+  // Getter — balance read karne pe chalta hai
+  get balance() {
+    return this.#_balance;
+  }
+
+  // Setter — balance set karne pe chalta hai
+  set balance(value) {
+    if (value < 0) {
+      console.error('Balance negative nahi ho sakta!');
+      return;
+    }
+    this.#_balance = value;
+    this.updateUI(); // Auto UI update!
+  }
+
+  get bet() {
+    return this.#_bet;
+  }
+
+  set bet(value) {
+    // Validation automatic!
+    if (value < 1) value = 1;
+    if (value > this.#_balance) {
+      value = this.#_balance;
+    }
+    this.#_bet = value;
+    console.log(\`Bet set to: \${value}\`);
+  }
+
+  // Computed getter — koi storage nahi!
+  get canSpin() {
+    return this.#_balance >= this.#_bet;
+  }
+
+  updateUI() {
+    // UI automatically update hogi!
+    balanceText.text = \`Balance: $\${this.#_balance}\`;
+  }
+}
+
+const wallet = new PlayerWallet(1000);
+
+// Getter use — function nahi lagana
+console.log(wallet.balance); // 1000
+
+// Setter use — validation automatic!
+wallet.balance = 500;  // updateUI() auto chala!
+wallet.balance = -100; // Error! Blocked!
+wallet.bet = 50;       // Validated automatically
+
+console.log(wallet.canSpin); // true`,
+    tip: "Getter/Setter se property change pe auto kaam hota hai — UI sync easy!"
+  },
+  {
+    title: "Complete Game Example",
+    tag: "gaming_company Level", tagClass: "warn",
+    game: "Sab concepts ek saath — real gaming_company level slot game structure!",
+    simple: "Yeh pattern gaming_company mein exactly use hoga — isko samjho aur yaad rakho!",
+    code: `// gaming_company Level — Complete Slot Game OOP Structure
+
+class GameObject {          // Base class
+  constructor(x, y) {
+    this.x = x; this.y = y;
+    this.visible = true;
+  }
+  show() { this.visible = true; }
+  hide() { this.visible = false; }
+}
+
+class Symbol extends GameObject {  // Inheritance
+  static TYPES = {                  // Static
+    CHERRY: { name:'cherry', vals:[0,0,5,20,100] },
+    SEVEN:  { name:'seven',  vals:[0,0,50,200,1000] },
+    WILD:   { name:'wild',   vals:[0,0,0,0,0] }
+  };
+
+  #_highlighted = false;            // Encapsulation
+
+  constructor(x, y, type) {
+    super(x, y);                    // Super call
+    this.type = type;
+    this.name = type.name;
+  }
+
+  get highlighted() {               // Getter
+    return this.#_highlighted;
+  }
+
+  set highlighted(val) {            // Setter
+    this.#_highlighted = val;
+    this.alpha = val ? 1 : 0.3;    // Auto update
+  }
+
+  calculateWin(bet, count) {        // Override ready
+    return bet * this.type.vals[count];
+  }
+}
+
+class WildSymbol extends Symbol {   // Polymorphism
+  constructor(x, y) {
+    super(x, y, Symbol.TYPES.WILD);
+  }
+
+  calculateWin(bet, count) {        // Override!
+    return bet * count * 3;         // Wild = 3x!
+  }
+}
+
+class Reel extends GameObject {
+  #symbols = [];
+  #isSpinning = false;
+
+  constructor(id, x) {
+    super(x, 0);
+    this.id = id;
+    this.speed = 0;
+  }
+
+  get isSpinning() { return this.#isSpinning; }
+
+  startSpin() {
+    this.#isSpinning = true;
+    this.speed = 50;
+  }
+
+  stopSpin() {
+    this.#isSpinning = false;
+    this.speed = 0;
+  }
+
+  update(delta) {
+    if (!this.#isSpinning) return;
+    // Scroll symbols...
+  }
+}
+
+// Use karo!
+const reels = Array(5).fill(null)
+  .map((_, i) => new Reel(i, i * 150));
+
+const wild = new WildSymbol(0, 0);
+console.log(wild.calculateWin(10, 3)); // 90
+wild.highlighted = true; // Setter!`,
+    tip: "Yeh gaming_company ka real pattern hai — practice karo aur Day 1 se impress karo!"
+  }
+];
+
+function show(index) {
+  const t = topics[index];
+  document.querySelectorAll('.btn').forEach((b, i) => {
+    b.classList.toggle('active', i === index);
+  });
+
+  document.getElementById('content').innerHTML = `
+    <div style="padding: 0 0 0 8px;">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+        <h3 style="margin:0; font-size:16px; font-weight:500;">${t.title}</h3>
+        <span class="tag ${t.tagClass}">${t.tag}</span>
+      </div>
+
+      <div class="section">
+        <p class="muted" style="padding:8px; background:var(--color-background-info); border-radius:var(--border-radius-md); color:var(--color-text-info);">${t.game}</p>
+      </div>
+
+      <div class="section">
+        <p style="font-size:12px; color:var(--color-text-secondary); margin:0 0 4px;">Simple matlab</p>
+        <p style="font-size:14px; color:var(--color-text-primary); margin:0;">${t.simple}</p>
+      </div>
+
+      <div class="section">
+        <p style="font-size:12px; color:var(--color-text-secondary); margin:0 0 4px;">Code — VS Code mein practice karo</p>
+        <div class="code">${t.code}</div>
+      </div>
+
+      <div style="padding:8px 10px; background:var(--color-background-success); border-radius:var(--border-radius-md);">
+        <p style="font-size:13px; color:var(--color-text-success); margin:0;"><strong>gaming_company tip:</strong> ${t.tip}</p>
+      </div>
+    </div>
+  `;
+}
+
+show(0);
+</script>

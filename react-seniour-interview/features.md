@@ -1842,4 +1842,4 @@ gsap.to(coin, {
 ---
 
 **Bhai yeh sab practice karo —**
-**ZVKY mein koi bhi feature mushkil nahi lagega! 💪🔥🎰**
+**gaming_company mein koi bhi feature mushkil nahi lagega! 💪🔥🎰**
