@@ -68,4 +68,4 @@ class Reel {
     });
   }
 }
-// ZVKY tip: Mask lagana zaroori hai — warna symbols container ke bahar dikhenge!
+// gaming_company tip: Mask lagana zaroori hai — warna symbols container ke bahar dikhenge!

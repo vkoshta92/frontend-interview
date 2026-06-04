@@ -1,4 +1,4 @@
-// 3+ scatter = bonus trigger! ZVKY ke games mein yeh most exciting part hai!
+// 3+ scatter = bonus trigger! gaming_company ke games mein yeh most exciting part hai!
 class ScatterSystem {
   constructor(app) {
     this.app = app;
@@ -105,4 +105,4 @@ class ScatterSystem {
     });
   }
 }
-// ZVKY tip: Scatter anywhere win deta hai — reel position matter nahi karta!
+// gaming_company tip: Scatter anywhere win deta hai — reel position matter nahi karta!

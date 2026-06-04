@@ -78,4 +78,4 @@ class StickyWildSystem {
     this.freeSpinsLeft = 0;
   }
 }
-// ZVKY tip: Sticky Wild = popular bonus feature. ZVKY ke premium games mein yeh zaroor hoga!
+// gaming_company tip: Sticky Wild = popular bonus feature. gaming_company ke premium games mein yeh zaroor hoga!

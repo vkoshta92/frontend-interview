@@ -36,4 +36,4 @@ console.log(bounds.x, bounds.width);
 
 // Sort children by y (depth)
 gameContainer.sortChildren(); // zIndex se sort
-// ZVKY tip: zIndex property set karo — addChild order ke bina depth control!
+// gaming_company tip: zIndex property set karo — addChild order ke bina depth control!

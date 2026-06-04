@@ -48,4 +48,4 @@ app.ticker.add(() => {
     winText.text = current.toString();
   }
 });
-// ZVKY tip: BitmapText use karo win counter ke liye — Regular Text slow hota hai baar baar update mein!
+// gaming_company tip: BitmapText use karo win counter ke liye — Regular Text slow hota hai baar baar update mein!

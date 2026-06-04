@@ -46,4 +46,4 @@ const explosion = PIXI.AnimatedSprite
 explosion.animationSpeed = 0.2;
 explosion.loop = false;
 explosion.play();
-// ZVKY tip: Spritesheet = bahut textures ek file mein — loading fast hoti hai! Texture Packer use karo!
+// gaming_company tip: Spritesheet = bahut textures ek file mein — loading fast hoti hai! Texture Packer use karo!

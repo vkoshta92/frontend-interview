@@ -56,4 +56,4 @@ const scaleUp = new Tween(
 app.ticker.add((delta) => {
   tweens.forEach(t => t.update(delta));
 });
-// ZVKY tip: Elastic easing = symbol bounce effect — players ko bahut pasand aata hai!
+// gaming_company tip: Elastic easing = symbol bounce effect — players ko bahut pasand aata hai!

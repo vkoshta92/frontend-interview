@@ -104,4 +104,4 @@ class WinLineSystem {
     return new Promise(r => setTimeout(r, ms));
   }
 }
-// ZVKY tip: Win lines ek ek dikhao — sab ek saath show mat karo. Players enjoy karte hain sequence mein!
+// gaming_company tip: Win lines ek ek dikhao — sab ek saath show mat karo. Players enjoy karte hain sequence mein!

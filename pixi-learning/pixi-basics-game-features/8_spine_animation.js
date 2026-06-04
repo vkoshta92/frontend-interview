@@ -1,4 +1,4 @@
-// Complex character animations, symbol animations — ZVKY mein Spine use hota hai!
+// Complex character animations, symbol animations — gaming_company mein Spine use hota hai!
 // Spine = Skeletal 2D Animation
 // npm install @pixi-spine/all-4.1
 
@@ -46,4 +46,4 @@ coin.state.addListener({
 // Skin change karo
 coin.skeleton.setSkinByName('gold');
 coin.skeleton.setSlotsToSetupPose();
-// ZVKY tip: Spine animations ZVKY ke symbols mein hoti hain — win pe special animation trigger hoti hai!
+// gaming_company tip: Spine animations gaming_company ke symbols mein hoti hain — win pe special animation trigger hoti hai!

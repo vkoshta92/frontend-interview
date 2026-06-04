@@ -1,4 +1,4 @@
-// Bonus mein free spins feature — ZVKY ke sabse popular mechanic!
+// Bonus mein free spins feature — gaming_company ke sabse popular mechanic!
 class FreeSpinSystem {
   constructor(gameManager) {
     this.gameManager = gameManager;
@@ -102,4 +102,4 @@ class FreeSpinSystem {
     app.stage.removeChild(summary);
   }
 }
-// ZVKY tip: Retrigger feature = players ka favorite! 3 scatter during free spins = 5 more spins!
+// gaming_company tip: Retrigger feature = players ka favorite! 3 scatter during free spins = 5 more spins!

@@ -60,4 +60,4 @@ app.renderer.render(backgroundContainer, {
   renderTexture: cachedBg
 });
 const bgSprite = new PIXI.Sprite(cachedBg);
-// ZVKY tip: Static background ko RenderTexture mein cache karo — har frame render nahi hogi!
+// gaming_company tip: Static background ko RenderTexture mein cache karo — har frame render nahi hogi!

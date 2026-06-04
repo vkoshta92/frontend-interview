@@ -74,4 +74,4 @@ class ParticleSystem {
 const coins = new ParticleSystem(app, coinTexture);
 coins.burst(640, 360, 50); // Win pe!
 app.ticker.add(d => coins.update(d));
-// ZVKY tip: ParticleContainer use karo — regular Container se 10x fast hota hai!
+// gaming_company tip: ParticleContainer use karo — regular Container se 10x fast hota hai!

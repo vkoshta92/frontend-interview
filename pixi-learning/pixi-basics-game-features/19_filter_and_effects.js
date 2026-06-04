@@ -1,4 +1,4 @@
-// Glow, blur, color matrix — premium visual effects ZVKY games mein!
+// Glow, blur, color matrix — premium visual effects gaming_company games mein!
 // npm install @pixi/filter-glow
 // npm install @pixi/filter-blur
 // npm install @pixi/filter-color-matrix
@@ -61,4 +61,4 @@ app.ticker.add((delta) => {
 
 // Remove all filters
 symbol.filters = null;
-// ZVKY tip: BlurFilter on spinning reel = realistic slot feel! Remove karo jab reel ruke!
+// gaming_company tip: BlurFilter on spinning reel = realistic slot feel! Remove karo jab reel ruke!

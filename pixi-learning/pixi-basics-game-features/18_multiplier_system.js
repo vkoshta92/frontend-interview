@@ -1,4 +1,4 @@
-// Win multiplier — 2x, 3x, 5x — balance grow karta hai! ZVKY games mein hota hai!
+// Win multiplier — 2x, 3x, 5x — balance grow karta hai! gaming_company games mein hota hai!
 class MultiplierSystem {
   constructor(app) {
     this.app = app;
@@ -100,4 +100,4 @@ class MultiplierSystem {
     return bar;
   }
 }
-// ZVKY tip: Cascade + Multiplier combo = most exciting feature! Har cascade pe multiplier badho!
+// gaming_company tip: Cascade + Multiplier combo = most exciting feature! Har cascade pe multiplier badho!

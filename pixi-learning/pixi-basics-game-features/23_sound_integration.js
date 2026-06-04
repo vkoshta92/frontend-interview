@@ -1,4 +1,4 @@
-// Spin sound, win jingle, bonus music — ZVKY games mein Howler.js use hota hai!
+// Spin sound, win jingle, bonus music — gaming_company games mein Howler.js use hota hai!
 // npm install howler
 import { Howl, Howler } from 'howler';
 
@@ -76,4 +76,4 @@ audio.playMusic('bgMusic');
 spinBtn.on('click', () => audio.play('spin'));
 onWin(() => audio.play('win'));
 onBigWin(() => audio.play('bigWin'));
-// ZVKY tip: Sprite audio use karo — ek file mein sare sounds = faster loading!
+// gaming_company tip: Sprite audio use karo — ek file mein sare sounds = faster loading!

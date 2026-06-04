@@ -35,4 +35,4 @@ app.ticker.start();  // Resume
 
 // Destroy
 app.destroy(true, { children: true });
-// ZVKY tip: autoDensity: true — Retina screens pe blurry nahi hoga!
+// gaming_company tip: autoDensity: true — Retina screens pe blurry nahi hoga!

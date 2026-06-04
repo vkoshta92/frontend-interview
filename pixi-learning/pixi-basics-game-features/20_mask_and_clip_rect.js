@@ -46,4 +46,4 @@ reelContainer.mask = null;
 // ScrollRect alternative
 const bounds = new PIXI.Rectangle(0, 0, 140, 420);
 sprite.filterArea = bounds; // Filter sirf yahan apply
-// ZVKY tip: Mask = performance heavy. Possible ho toh filterArea use karo ya culling!
+// gaming_company tip: Mask = performance heavy. Possible ho toh filterArea use karo ya culling!

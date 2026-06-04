@@ -1,4 +1,4 @@
-// Mobile + Desktop dono pe game fit ho — ZVKY games mobile friendly hote hain!
+// Mobile + Desktop dono pe game fit ho — gaming_company games mobile friendly hote hain!
 class ResponsiveManager {
   constructor(app, designWidth, designHeight) {
     this.app = app;
@@ -73,4 +73,4 @@ const responsive = new ResponsiveManager(
 // Sab game objects gameContainer mein add karo
 responsive.gameContainer.addChild(reelContainer);
 responsive.gameContainer.addChild(uiContainer);
-// ZVKY tip: gameContainer scale karo — individual elements nahi! Ek jagah scale = sab responsive!
+// gaming_company tip: gameContainer scale karo — individual elements nahi! Ek jagah scale = sab responsive!

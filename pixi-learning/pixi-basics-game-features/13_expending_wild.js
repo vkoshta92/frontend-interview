@@ -1,4 +1,4 @@
-// Wild symbol poora reel cover karta hai — ZVKY ke premium slots mein hota hai!
+// Wild symbol poora reel cover karta hai — gaming_company ke premium slots mein hota hai!
 class ExpandingWild {
   constructor(container, symbolHeight) {
     this.container = container;
@@ -87,4 +87,4 @@ class ExpandingWild {
     });
   }
 }
-// ZVKY tip: GlowFilter npm install karna hoga: @pixi/filter-glow. ZVKY mein yeh filter use hota hai!
+// gaming_company tip: GlowFilter npm install karna hoga: @pixi/filter-glow. gaming_company mein yeh filter use hota hai!

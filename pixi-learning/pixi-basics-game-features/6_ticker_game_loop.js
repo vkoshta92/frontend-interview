@@ -42,4 +42,4 @@ const fpsText = new PIXI.Text('');
 app.ticker.add(() => {
   fpsText.text = `FPS: ${Math.round(app.ticker.FPS)}`;
 });
-// ZVKY tip: delta use karo movement mein — 60fps aur 30fps pe same speed milegi!
+// gaming_company tip: delta use karo movement mein — 60fps aur 30fps pe same speed milegi!

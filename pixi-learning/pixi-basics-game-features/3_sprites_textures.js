@@ -42,4 +42,4 @@ cherry.blendMode = PIXI.BLEND_MODES.MULTIPLY;
 
 // Destroy
 cherry.destroy({ texture: false });
-// ZVKY tip: anchor.set(0.5) = rotation/scale center se hogi — symbols ke liye zaroori!
+// gaming_company tip: anchor.set(0.5) = rotation/scale center se hogi — symbols ke liye zaroori!

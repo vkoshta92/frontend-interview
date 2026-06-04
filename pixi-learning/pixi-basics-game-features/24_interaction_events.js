@@ -73,4 +73,4 @@ class Button extends PIXI.Container {
     this.alpha = 1;
   }
 }
-// ZVKY tip: app.stage.interactive = true zaroori hai global events ke liye!
+// gaming_company tip: app.stage.interactive = true zaroori hai global events ke liye!

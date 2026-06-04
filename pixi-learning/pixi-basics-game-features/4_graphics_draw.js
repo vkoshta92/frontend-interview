@@ -45,4 +45,4 @@ g.clear();
 g.beginFill(0xFF0000);
 g.drawRect(0, 0, 200, 100);
 g.endFill();
-// ZVKY tip: Win line draw karne ke liye lineStyle + moveTo + lineTo — ZVKY mein exact yahi!
+// gaming_company tip: Win line draw karne ke liye lineStyle + moveTo + lineTo — gaming_company mein exact yahi!

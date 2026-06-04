@@ -76,4 +76,4 @@ async function showLoadingScreen() {
 
   app.stage.removeChild(barBg, bar, text);
 }
-// ZVKY tip: Bundle mein load karo — sab ek saath load hoti hain, faster!
+// gaming_company tip: Bundle mein load karo — sab ek saath load hoti hain, faster!
